@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SAHAJ_LABS | Intelligence Redefined</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #050505;
+            --primary: #00f2ff;
+            --text-main: #ffffff;
+            --text-muted: #888888;
+            --font-main: 'Inter', sans-serif;
+            --font-tech: 'Orbitron', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            /* Grid Background */
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* --- 1. NAVBAR --- */
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            padding: 30px 50px;
+            display: flex;
+            align-items: center;
+            z-index: 100;
+        }
+
+        /* Left aligned links */
+        .nav-left {
+            display: flex;
+            gap: 40px;
+            flex: 1;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-family: var(--font-tech);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            color: var(--primary);
+            text-shadow: 0 0 10px var(--primary);
+        }
+
+        /* Center Brand */
+        .brand-center {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: var(--font-tech);
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: 3px;
+            background: linear-gradient(90deg, var(--primary), #ffffff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            cursor: pointer;
+        }
+
+        /* --- 2. SECTIONS --- */
+        .content-section {
+            display: none; /* Hidden by default */
+            flex: 1;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            animation: fadeIn 0.5s ease-out;
+            padding-top: 60px; /* Offset for fixed nav */
+        }
+
+        .content-section.active-section {
+            display: flex;
+        }
+
+        /* HOME STYLING */
+        .hero-title {
+            font-family: var(--font-tech);
+            font-size: 5.5rem;
+            font-weight: 900;
+            margin: 0;
+            line-height: 1.1;
+            background: linear-gradient(135deg, #ffffff 0%, #666666 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin-top: 15px;
+            letter-spacing: 2px;
+        }
+
+        /* CONTACT STYLING */
+        .contact-box {
+            background: rgba(20,20,25,0.6);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 50px;
+            border-radius: 20px;
+            width: 400px;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+        }
+        .contact-link {
+            display: block;
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #333;
+            color: #fff;
+            text-decoration: none;
+            transition: 0.3s;
+            font-family: var(--font-tech);
+        }
+        .contact-link:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(0, 242, 255, 0.05);
+        }
+
+        /* --- 3. FOOTER --- */
+        .footer {
+            padding: 30px;
+            text-align: center;
+            font-family: var(--font-tech);
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-top: auto; /* Pushes to bottom */
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="nav-left">
+            <button class="nav-btn active" onclick="switchTab('home', this)">Home</button>
+            <a href="/detector" class="nav-btn">Detector</a>
+            <a href="/charcha" class="nav-btn">Charcha</a>
+            <button class="nav-btn" onclick="switchTab('contact', this)">Contact</button>
+        </div>
+        
+        <div class="brand-center" onclick="switchTab('home', document.querySelector('.nav-btn'))">SAHAJ_LABS</div>
+    </nav>
+
+    <div id="home" class="content-section active-section">
+        <h1 class="hero-title">INTELLIGENCE<br>REDEFINED.</h1>
+        <div class="hero-subtitle">SETTING UP NEW BENCHMARKS FOR AI.</div>
+    </div>
+
+    <div id="contact" class="content-section">
+        <div class="contact-box">
+            <h2 style="font-family:'Orbitron'; color:var(--primary); margin-top:0;">GET IN TOUCH</h2>
+            <p style="color:#aaa; margin-bottom:30px;">Collaborations & Inquiries</p>
+            
+            <a href="mailto:mallasahaj@gmail.com" class="contact-link">📧 Email Me</a>
+            <a href="https://linkedin.com" target="_blank" class="contact-link">🔗 LinkedIn Profile</a>
+        </div>
+    </div>
+
+    <div class="footer">
+        Best is yet to come
+    </div>
+
+    <script>
+        function switchTab(tabId, btnElement) {
+            // 1. Hide all sections
+            document.querySelectorAll('.content-section').forEach(sec => {
+                sec.classList.remove('active-section');
+            });
+
+            // 2. Show target section
+            document.getElementById(tabId).classList.add('active-section');
+
+            // 3. Update Nav Buttons
+            // Only update active state for the buttons (Home/Contact), separate from links
+            if (btnElement && btnElement.tagName === 'BUTTON') {
+                document.querySelectorAll('button.nav-btn').forEach(btn => btn.classList.remove('active'));
+                btnElement.classList.add('active');
+            }
+        }
+    </script>
+
+</body>
+</html>

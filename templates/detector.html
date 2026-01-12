@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SAHAJ_LABS | Detector</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #050505;
+            --primary: #00f2ff;
+            --glass: rgba(20, 20, 25, 0.7);
+            --font-tech: 'Orbitron', sans-serif;
+            --font-main: 'Inter', sans-serif;
+        }
+
+        body { 
+            background-color: var(--bg-dark);
+            color: #fff;
+            /* Consistent Grid Background */
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            font-family: var(--font-tech); /* FIXED FONT HERE */
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+            margin: 0; 
+            overflow: hidden; 
+        }
+
+        /* Nav specifically for this page */
+        .top-nav {
+            position: absolute;
+            top: 30px;
+            left: 50px;
+            display: flex;
+            gap: 30px;
+        }
+        .nav-link {
+            color: #888; text-decoration: none; text-transform: uppercase; font-size: 0.9rem; transition: 0.3s;
+        }
+        .nav-link:hover { color: var(--primary); }
+
+        /* Glass Panel */
+        .scanner-panel {
+            width: 100%;
+            max-width: 550px;
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 0 50px rgba(0,0,0,0.6);
+        }
+
+        h2 { margin-top: 0; color: var(--primary); letter-spacing: 2px; }
+
+        /* Upload Area */
+        .upload-zone {
+            border: 2px dashed rgba(255,255,255,0.2);
+            border-radius: 10px;
+            margin: 30px 0;
+            height: 280px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            cursor: pointer;
+            transition: 0.3s;
+            background: rgba(0,0,0,0.3);
+        }
+        .upload-zone:hover { border-color: var(--primary); }
+
+        #preview { max-width: 100%; max-height: 100%; display: none; z-index: 1; }
+        
+        /* The Laser Scanner */
+        .laser-line {
+            position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+            background: var(--primary);
+            box-shadow: 0 0 20px var(--primary);
+            z-index: 2; display: none;
+            animation: scan 1.8s infinite cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes scan { 0% { top: 0%; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
+
+        /* Button */
+        .btn-run {
+            width: 100%; padding: 15px;
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            font-family: var(--font-tech);
+            font-weight: 700; font-size: 1rem;
+            cursor: pointer; transition: 0.3s;
+        }
+        .btn-run:hover { background: var(--primary); color: #000; box-shadow: 0 0 30px rgba(0,242,255,0.4); }
+
+        /* Results */
+        .result-box { margin-top: 20px; font-size: 1.3rem; height: 30px; letter-spacing: 1px; }
+        .real { color: #00ff88; text-shadow: 0 0 15px #00ff88; }
+        .fake { color: #ff0055; text-shadow: 0 0 15px #ff0055; }
+    </style>
+</head>
+<body>
+
+    <div class="top-nav">
+        <a href="/" class="nav-link">&larr; Home</a>
+        <a href="/charcha" class="nav-link">Charcha</a>
+    </div>
+
+    <div class="scanner-panel">
+        <h2>DINOv2 DIAGNOSTIC</h2>
+        <p style="color:#aaa; font-family: var(--font-main); font-size: 0.9rem;">Advanced Deepfake Forensics</p>
+
+        <div class="upload-zone" onclick="document.getElementById('inp').click()">
+            <input type="file" id="inp" hidden accept="image/*" onchange="previewImg()">
+            <div id="ph" style="color:#555">CLICK TO UPLOAD</div>
+            <img id="preview">
+            <div class="laser-line" id="laser"></div>
+        </div>
+
+        <button class="btn-run" onclick="scan()">INITIATE SCAN</button>
+        <div id="res" class="result-box"></div>
+    </div>
+
+    <script>
+        function previewImg() {
+            const f = document.getElementById('inp').files[0];
+            if(f){
+                const r = new FileReader();
+                r.onload = e => {
+                    document.getElementById('preview').src = e.target.result;
+                    document.getElementById('preview').style.display = 'block';
+                    document.getElementById('ph').style.display = 'none';
+                    document.getElementById('res').innerHTML = "";
+                }
+                r.readAsDataURL(f);
+            }
+        }
+
+        async function scan() {
+            const f = document.getElementById('inp').files[0];
+            if(!f) return;
+
+            document.getElementById('laser').style.display = 'block';
+            document.getElementById('res').innerText = "SCANNING...";
+
+            const fd = new FormData();
+            fd.append("file", f);
+
+            try {
+                const req = await fetch("/predict", { method: "POST", body: fd });
+                const data = await req.json();
+
+                document.getElementById('laser').style.display = 'none';
+                const cls = data.label === "REAL" ? "real" : "fake";
+                document.getElementById('res').innerHTML = `<span class="${cls}">${data.label}</span> (${data.confidence})`;
+            } catch(e) {
+                document.getElementById('laser').style.display = 'none';
+                document.getElementById('res').innerText = "Error";
+            }
+        }
+    </script>
+</body>
+</html>

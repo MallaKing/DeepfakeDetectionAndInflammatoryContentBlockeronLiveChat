@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sahaj Labs | Access</title>
+    <style>
+        /* (Use the CSS I gave you in the previous response, it was perfect. 
+           Just ensure the body bg is #050505 to match the theme) */
+        :root { --primary: #00f2ff; --bg-dark: #050505; --bg-panel: #111; }
+        body { background-color: var(--bg-dark); color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .auth-card { background: var(--bg-panel); width: 400px; padding: 40px; border: 1px solid #333; box-shadow: 0 0 20px rgba(0, 242, 255, 0.1); }
+        .tabs { display: flex; margin-bottom: 30px; border-bottom: 1px solid #333; }
+        .tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; color: #666; }
+        .tab.active { color: var(--primary); border-bottom: 2px solid var(--primary); }
+        input { width: 100%; padding: 12px; background: #000; border: 1px solid #333; color: var(--primary); margin-bottom: 15px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: var(--primary); border: none; font-weight: bold; cursor: pointer; }
+        .hidden { display: none; }
+        #error-msg { color: #ff0055; text-align: center; margin-top: 15px; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <div class="auth-card">
+        <div class="tabs">
+            <div class="tab active" id="tab-login" onclick="switchTab('login')">LOGIN</div>
+            <div class="tab" id="tab-reg" onclick="switchTab('reg')">REGISTER</div>
+        </div>
+
+        <div id="login-form">
+            <input type="text" id="l-user" placeholder="Username">
+            <input type="password" id="l-pass" placeholder="Password">
+            <button onclick="login()">AUTHENTICATE</button>
+        </div>
+
+        <div id="reg-form" class="hidden">
+            <input type="text" id="r-user" placeholder="Username">
+            <input type="email" id="r-email" placeholder="Email">
+            <input type="password" id="r-pass" placeholder="Password">
+            <button onclick="register()">INITIALIZE ID</button>
+        </div>
+        <div id="error-msg"></div>
+    </div>
+
+    <script>
+        const API = window.location.origin;
+
+        function switchTab(mode) {
+            document.getElementById('error-msg').innerText = "";
+            if(mode === 'login'){
+                document.getElementById('login-form').classList.remove('hidden');
+                document.getElementById('reg-form').classList.add('hidden');
+                document.getElementById('tab-login').classList.add('active');
+                document.getElementById('tab-reg').classList.remove('active');
+            } else {
+                document.getElementById('login-form').classList.add('hidden');
+                document.getElementById('reg-form').classList.remove('hidden');
+                document.getElementById('tab-login').classList.remove('active');
+                document.getElementById('tab-reg').classList.add('active');
+            }
+        }
+
+        async function register() {
+            const user = document.getElementById('r-user').value;
+            const email = document.getElementById('r-email').value;
+            const pass = document.getElementById('r-pass').value;
+
+            const res = await fetch(`${API}/register`, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({username: user, email: email, password: pass})
+            });
+            
+            const data = await res.json();
+            if(res.ok) {
+                alert("Registration Successful! Please Login.");
+                switchTab('login');
+            } else {
+                // Pydantic Error Handling
+                let msg = data.detail;
+                if(Array.isArray(data.detail)) msg = data.detail[0].msg;
+                document.getElementById('error-msg').innerText = msg;
+            }
+        }
+
+        async function login() {
+            const user = document.getElementById('l-user').value;
+            const pass = document.getElementById('l-pass').value;
+            const formData = new URLSearchParams();
+            formData.append('username', user);
+            formData.append('password', pass);
+
+            const res = await fetch(`${API}/token`, {
+                method: "POST",
+                headers: {"Content-Type": "application/x-www-form-urlencoded"},
+                body: formData
+            });
+
+            const data = await res.json();
+            if(res.ok) {
+                localStorage.setItem('token', data.access_token);
+                localStorage.setItem('username', data.username);
+                window.location.href = '/charcha'; // Redirect to Chat
+            } else {
+                document.getElementById('error-msg').innerText = data.detail;
+            }
+        }
+    </script>
+</body>
+</html>
